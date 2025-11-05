@@ -1,0 +1,116 @@
+*{
+    margin: 0.4%;
+    padding: 0%;
+    box-sizing: border-box;
+}
+.container{
+    background-color: gray;
+    /* padding-left: 33vw;*/
+} 
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+header{
+ display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+.message{
+    text-align: center;
+    font-size:23px ;
+}
+#colorDisplay{
+    background-color: white;
+    height: 4vw;
+    width: 37vw;
+    display: flex;
+    justify-content: center; 
+    align-items: center;   
+    font-size: xx-larger;
+    border-radius: 23px;
+}
+.streak-section{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2vw;
+    justify-content: center;
+    margin-top: 2vw;
+    
+}
+.streak-box{
+    border: 1px solid black;
+    background-color: rgb(66, 66, 65);
+    text-align: center;
+    width: 12vw;
+    border-radius: 23px;
+    
+    font-weight: 900;
+    /* padding: 2vw; */
+
+}
+.controls{
+    margin-top: 2vw;
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+   
+}
+#newRoundBtn{
+    font-weight: 900;
+    color: white;
+    background-color: aqua;
+    font-size: xx-large;
+     border-radius: 20px;
+    
+}
+#easyBtn{
+    color: white;
+    background-color: gray;
+    font-weight: 900;
+    font-size: xx-large;
+       border-radius: 20px;
+    
+
+}
+#hardBtn{
+     color: black;
+    background-color: rgb(255, 255, 255);
+    font-weight: 900;
+    font-size: xx-large;
+       border-radius: 20px;
+    
+}
+#resetStreakBtn{
+    font-weight: 900;
+    color: white;
+    background-color: aqua;
+    font-size: xx-large;
+       border-radius: 20px;
+    
+
+}
+#colorBoxContainer{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2vw;
+    margin-top: 2vw;
+margin-left: 0%;
+justify-content: center;
+width: 56%;
+align-items: center;
+justify-content: center;
+margin-left: 20vw;
+ 
+}
+.color-box{
+    border: 1px solid black;
+    height: 10vw;
+    width: 14vw;
+    border-radius: 23px;
+    background-color: rgb(87, 86, 84);
+    
+}
