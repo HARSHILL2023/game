@@ -1,3 +1,165 @@
+// // DOM Element
+// const scoreDisplay = document.querySelector('#score');
+// const timeLeftDisplay = document.querySelector('#timeLeft');
+// const maxScoreDisplay = document.querySelector('#maxScore');
+// const startBtn = document.querySelector('#startBtn');
+// const holes = document.querySelectorAll('.hole');
+// const moles = document.querySelectorAll('.mole');
+
+// //  Required vaeriable....
+
+// var score = 0;
+// var time = 30;
+// var bestScore = 0;
+// var playGame = false;
+// var gameId = null;
+
+
+
+// //  Common Function..
+
+// function webLoad()
+// {
+//     onLoad();
+//     displayContent();
+// }
+
+
+// function onLoad()
+// {
+//     var temp = localStorage.getItem('highScoreMole');
+//     if(temp != null)
+//     {
+//         bestScore = temp;
+//     }
+//     else
+//     {
+//         bestScore = 0;
+//     }
+// };
+
+
+// function displayContent()
+// {
+//     scoreDisplay.textContent = score;
+//     timeLeftDisplay.textContent = time;
+//     maxScoreDisplay.textContent = bestScore;
+// }
+
+
+// function endGame()
+// {
+//     clearInterval(gameId);
+//     startBtn.disabled = false;
+//     playGame = false;
+//     time = 30;
+//     if(score > bestScore)
+//     {
+//         localStorage.setItem('highScoreMole', score);
+//         bestScore = score;
+//         score = 0;
+//         alert(You've scored max value previous : ${bestScore});
+//     }
+//     else
+//     {
+//         alert(Your've current score is : ${score});
+//     }
+    
+//     displayContent();
+// }
+
+
+// function randomTime(min, max)
+// {   
+//     return Math.floor(Math.random()*(min - max) + max);
+// }
+
+
+// function randomHole()
+// {
+//     var index = Math.floor(Math.random()* holes.length);   //  holes.length -> for if i have only 3 box so it can also work ans if i have 10 boxex so it can also work....:
+//     return holes[index];
+//     // 0th ->  <div class="hole" id="hole1">
+//     //              <div class="mole"></div>
+//     //         </div>
+// }
+
+
+// function popGame()
+// {
+//     var timer = randomTime(500,1500);
+//     var hole = randomHole();
+//     var mole = hole.querySelector('.mole');  // document only use when you want to access from HTMl and if you want to access from JS (already access from HTMl) than only use .querySelectore......;
+
+//     if(playGame)
+//     {
+//     mole.classList.add('up');
+//     setTimeout(function()
+//     {
+//         mole.classList.remove('up');
+//         popGame();
+//     }, timer);
+
+//     }
+// }
+// // for infinte -> setIntervel &&&& for one time call -> setTimeOut........;
+
+// function startGame()
+// {
+//     time = 30;
+//     score = 0;
+//     startBtn.disabled = true;
+//     playGame = true;
+//     popGame();
+//     gameId = setInterval(function()
+//     {
+//         time--;
+//         if(time == -1)
+//         {
+//             endGame();   // clearInterval(gameId); -> for check if timer end at zero(0);
+//         }
+//         displayContent();
+//     },1000)
+// }
+
+
+// function bonk(event)
+// {
+//     if(!event.isTrusted) return;
+//     if(playGame == false) return;
+//     if(event.target.classList.contains('up'))
+//     {
+//         score++ ; 
+//         event.target.classList.remove('up');
+//         event.target.classList.add('bonked');
+//     }    
+//     setTimeout(function()     // hgry/........................................................................
+//     {
+//         event.target.classList.remove('bonked');
+//         displayContent();
+//     },300);
+// }
+
+
+// webLoad();
+
+
+// moles.forEach((box)=>{
+//     box.addEventListener('click', bonk);
+// })
+// startBtn.addEventListener('click',startGame);
+
+
+
+
+
+
+
+
+
+
+// DOM Elements
+
 const scoreDisplay = document.querySelector('#score');
 const timeLeftDisplay = document.querySelector('#timeLeft');
 const maxScoreDisplay = document.querySelector('#maxScore');
@@ -5,100 +167,198 @@ const startBtn = document.querySelector('#startBtn');
 const holes = document.querySelectorAll('.hole');
 const moles = document.querySelectorAll('.mole');
 
-//variable
 
-var score = 0;
-var time = 30;
-var bestScore = 0;
-var playGame = false;
-var gameId = null;
+// Game State
 
-//common function
+let score = 0;
+let time = 30;
+let bestScore = 0;
+let playGame = false;
+let gameId = null;
+let popTimeoutId = null;
+let isPaused = false;
 
-function webload() {
-    onLoad();
-    displayContent();
+// Create Flex Container for Buttons 
+
+const buttonContainer = document.createElement('div');
+buttonContainer.style.display = 'flex';
+buttonContainer.style.justifyContent = 'space-between';
+buttonContainer.style.gap = '10px';
+buttonContainer.style.marginBottom = '20px';
+startBtn.insertAdjacentElement('afterend', buttonContainer);
+
+// Create Pause/Resume Button 
+
+const pauseBtn = document.createElement('button');
+pauseBtn.id = 'pauseBtn';
+pauseBtn.className = 'start-btn';
+pauseBtn.textContent = 'Pause';
+pauseBtn.disabled = true;
+
+// Create Reset Button 
+
+const resetBtn = document.createElement('button');
+resetBtn.id = 'resetBtn';
+resetBtn.className = 'start-btn';
+resetBtn.textContent = 'Reset';
+
+// Append both buttons into flex container
+buttonContainer.appendChild(pauseBtn);
+buttonContainer.appendChild(resetBtn);
+
+// Utility Functions
+
+function webLoad() {
+  onLoad();
+  displayContent();
 }
+
 function onLoad() {
-    var tamp = localStorage.getItem('highScoreMole')
-    bestScore = (tamp != null) ? (bestScore = tamp) : (bestScore = 0);
-};
+  const temp = localStorage.getItem('highScoreMole');
+  bestScore = temp != null ? Number(temp) : 0;
+}
 
 function displayContent() {
-    scoreDisplay.textContent = score;
-    timeLeftDisplay.textContent = time;
-    maxScoreDisplay.textContent = bestScore;
-}
-function endGame() {
-    clearInterval(gameId);
-    startBtn.disabled = false;
-    playGame = false;
-    if (score > bestScore) {
-        localStorage.setItem('highScoreMole', score);
-        bestScore = score;
-        score = 0;
-        alert(`you have scored max score then previous : ${bestScore}`);
-    }
-    else {
-        alert(`you have current score is : ${score}`)
-    }
-    displayContent();
+  scoreDisplay.textContent = score;
+  timeLeftDisplay.textContent = time;
+  maxScoreDisplay.textContent = bestScore;
 }
 
-function randomtime(min, max) {
-    return Math.floor(Math.random() * (max - min) + max);
+function clearTimers() {
+  if (gameId) clearInterval(gameId);
+  if (popTimeoutId) clearTimeout(popTimeoutId);
+  gameId = null;
+  popTimeoutId = null;
+}
+
+function hideAllMoles() {
+  moles.forEach(m => m.classList.remove('up', 'bonked'));
+}
+
+// Game Logic
+
+function endGame() {
+  clearTimers();
+  playGame = false;
+  isPaused = false;
+  startBtn.disabled = false;
+  pauseBtn.disabled = true;
+  pauseBtn.textContent = 'Pause';
+  hideAllMoles();
+
+  if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem('highScoreMole', bestScore);
+    alert(`New Best! Score: ${score}`);
+  } else {
+    alert(`Your score: ${score}`);
+  }
+
+  score = 0;
+  time = 30;
+  displayContent();
+}
+
+function randomTime(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
 function randomHole() {
-    var index = Math.floor(Math.random() * holes.length);
-    return holes[index];
+  return holes[Math.floor(Math.random() * holes.length)];
 }
+
 function popGame() {
-    var timer = randomtime(500, 1500);
-    var hole = randomHole();
-    var mole = hole.querySelector('.mole');
-    if (playGame) {
-        mole.classList.add('up');
-        setTimeout(function () {
-            mole.classList.remove('up');
-            if (playGame) {
-                popGame();
-            }
-        }, timer);
-    }
+  if (!playGame) return;
+  const timer = randomTime(500, 1500);
+  const hole = randomHole();
+  const mole = hole.querySelector('.mole');
+
+  mole.classList.add('up');
+  popTimeoutId = setTimeout(() => {
+    mole.classList.remove('up');
+    if (playGame) popGame();
+  }, timer);
 }
-// setTimeOut ot will wait  for some time than call again
+
+// Controls
 
 function startGame() {
-    time = 30;
-    score = 0;
-    startBtn.disabled = true; // true means btn is disabled
-    playGame = true;
-    popGame();
-    gameId = setInterval(function () {
-        time--;
-        if (time == 0) {
-            endGame();
-        }
-        displayContent();
-    }, 1000);
+  if (playGame && !isPaused) return;
+
+  time = 30;
+  score = 0;
+  playGame = true;
+  isPaused = false;
+  startBtn.disabled = true;
+  pauseBtn.disabled = false;
+  pauseBtn.textContent = 'Pause';
+
+  displayContent();
+  popGame();
+
+  gameId = setInterval(() => {
+    time--;
+    if (time < 0) endGame();
+    displayContent();
+  }, 1000);
 }
 
-function bonk(event) {
-    if (!event.isTrusted) return;
-    if (playGame == false) return;
-    if (event.target.classList.contains('up')) {  // Only increment score if mole is up
-        score++;
-        event.target.classList.remove('up');
-        event.target.classList.add('bonked');
-        displayContent();  // Update the score display
-        setTimeout(function () {
-            event.target.classList.remove('bonked');
-        }, 300);
-    }
+function pauseGame() {
+  if (!playGame || isPaused) return;
+  isPaused = true;
+  playGame = false;
+  clearTimers();
+  hideAllMoles();
+  pauseBtn.textContent = 'Resume';
 }
-webload();
-moles.forEach(box => {
-    box.addEventListener('click', bonk);  // Just pass the function reference
-});
+
+function resumeGame() {
+  if (!isPaused) return;
+  isPaused = false;
+  playGame = true;
+  pauseBtn.textContent = 'Pause';
+  popGame();
+
+  gameId = setInterval(() => {
+    time--;
+    if (time < 0) endGame();
+    displayContent();
+  }, 1000);
+}
+
+function resetGame() {
+  clearTimers();
+  playGame = false;
+  isPaused = false;
+  hideAllMoles();
+
+  score = 0;
+  time = 30;
+  bestScore = 0;
+  localStorage.setItem('highScoreMole', 0);
+
+  startBtn.disabled = false;
+  pauseBtn.disabled = true;
+  pauseBtn.textContent = 'Pause';
+  displayContent();
+}
+
+// Event Listeners
+
+
+function bonk(event) {
+  if (!event.isTrusted || !playGame) return;
+  if (event.target.classList.contains('up')) {
+    score++;
+    event.target.classList.remove('up');
+    event.target.classList.add('bonked');
+  }
+  setTimeout(() => event.target.classList.remove('bonked'), 300);
+  displayContent();
+}
+
+webLoad();
+moles.forEach(m => m.addEventListener('click', bonk));
 startBtn.addEventListener('click', startGame);
+pauseBtn.addEventListener('click', () => (isPaused ? resumeGame() : pauseGame()));
+resetBtn.addEventListener('click', resetGame);
