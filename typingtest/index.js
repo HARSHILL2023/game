@@ -63,7 +63,7 @@ function startGame() {
     typingArea.value = "";
     typingArea.focus();
     typingArea.setAttribute('placeholder', 'Now you are eligible to erite and use the input box');
-    // initialize startTime so WPM calculation has a baseline
+    // initialize startTime so WPM calculation has a baseli/e
     startTime = Date.now();
     // reset displays
     wpmDisplay.textContent = 0;
