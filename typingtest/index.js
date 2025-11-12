@@ -75,6 +75,8 @@ function startGame() {
 }
 
 function updateStatus(){
+    var typed = typingArea.value;
+    const minute =Math.floor(Date.now()-startTime)/1000/60;
     var textContent = typingArea.value;
     const word = textContent.trim().split(/\s+/).filter(w=>w.length>0)
     // console.log(word);
@@ -82,8 +84,23 @@ function updateStatus(){
     console.log(elapsedTime);
     const wpm = elapsedTime > 0 ?Math.floor(word.length / elapsedTime): 0 
     wpmDisplay.textContent= wpm;
+    var currentScore =0;
+    for(var i=0;i<currentText.length;i++){
+        if(currentText[i]== typed[i]){
+            currentScore++
+        }
+    }
+    const accuracy =(typed.length >0)?Math.floor(currentScore/typed.length *100): 0
+    accuracyDisplay.textContent=accuracy;
 }
+function typeControl(){
+    if(startTime == null){
+        startTime =Date.now();
+    }
+    console.log(startTime);
+    updateStatus()
 
+}
 function wordType() {
     if (startTime == null) {
         startTime = Date.now();

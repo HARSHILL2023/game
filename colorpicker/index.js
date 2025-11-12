@@ -62,14 +62,15 @@ function colorGenerate(){
     return `rgb(${a}, ${b}, ${c})`;
 }
 
-function generateColor(num){
+function generateColor(num){ // stores the six colors too show in the boxes
     const arr = [];
     for(var i=0; i<num; i++){
         arr.push(colorGenerate());
     }
+
     return arr;
 }
-function pickGenerator(){
+function pickGenerator(){ // it gives  the correct color to choose
     const math = Math.floor(Math.random()*colors.length);
     return colors[math];
 }
