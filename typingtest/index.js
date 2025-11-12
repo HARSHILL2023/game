@@ -50,6 +50,7 @@ function endGame() {
     startBtn.disabled = false;
     timeLeft = 60;
     displayContent();
+    typingArea.disabled=true;
 }
 function startGame() {
     startBtn.disabled = true;
@@ -62,6 +63,11 @@ function startGame() {
     typingArea.value = "";
     typingArea.focus();
     typingArea.setAttribute('placeholder', 'Now you are eligible to erite and use the input box');
+    // initialize startTime so WPM calculation has a baseline
+    startTime = Date.now();
+    // reset displays
+    wpmDisplay.textContent = 0;
+    accuracyDisplay.textContent = 0;
     timerInterval = setInterval(function () {
         timeLeft--;
         if (timeLeft <= 0) {
@@ -74,39 +80,56 @@ function startGame() {
 
 }
 
-function updateStatus(){
-    var typed = typingArea.value;
-    const minute =Math.floor(Date.now()-startTime)/1000/60;
-    var textContent = typingArea.value;
-    const word = textContent.trim().split(/\s+/).filter(w=>w.length>0)
-    // console.log(word);
-    const elapsedTime = (Date.now()-startTime)/60000;
-    console.log(elapsedTime);
-    const wpm = elapsedTime > 0 ?Math.floor(word.length / elapsedTime): 0 
-    wpmDisplay.textContent= wpm;
-    var currentScore =0;
-    for(var i=0;i<currentText.length;i++){
-        if(currentText[i]== typed[i]){
-            currentScore++
+function updateStatus() {
+    var textContent = typingArea.value || '';
+
+    const minute = (Date.now() - startTime) / 1000 / 60;
+    const words = textContent.trim().split(/\s+/).filter(w => w.length > 0);
+    const wpm = (minute > 0) ? Math.round(words.length / minute) : 0;
+    wpmDisplay.textContent = wpm;
+
+    // compute character-accurate score only over typed characters
+    let currentScore = 0;
+    const len = Math.min(currentText.length, textContent.length);
+    for (let i = 0; i < len; i++) {
+        if (currentText[i] === textContent[i]) {
+            currentScore++;
         }
     }
-    const accuracy =(typed.length >0)?Math.floor(currentScore/typed.length *100): 0
-    accuracyDisplay.textContent=accuracy;
-}
-function typeControl(){
-    if(startTime == null){
-        startTime =Date.now();
-    }
-    console.log(startTime);
-    updateStatus()
 
+    // accuracy = correct typed chars / total typed chars
+    const accuracy = (textContent.length > 0) ? Math.floor((currentScore / textContent.length) * 100) : 0;
+    accuracyDisplay.textContent = accuracy;
 }
+
+function Highlights(){
+    var typed = typingArea.value;
+    var highlighText = '';
+
+
+    for(let i = 0; i< currentText.length; i++){
+        if(i <= typed.length){
+            if(currentText[i] === typed[i]){
+                highlighText += `<span class = "correct">${currentText[i]}</span>`;
+            }
+            else{
+                highlighText += `<span class = "incorrect">${currentText[i]}</span>`;
+            }
+        }
+        else{
+            highlighText += currentText[i];
+        }
+    }
+    textDisplay.innerHTML = highlighText;
+}
+
 function wordType() {
     if (startTime == null) {
         startTime = Date.now();
     }
     // console.log(startTime);
     updateStatus();
+    Highlights();
 }
 
 webload();
