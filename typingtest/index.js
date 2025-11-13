@@ -7,6 +7,8 @@ const accuracyDisplay = document.querySelector('#accuracy');
 const bestWPMDisplay = document.querySelector('#bestWPM');
 const startBtn = document.querySelector('#startBtn');
 const resetBtn = document.querySelector('#resetBtn');
+const timer15= document.querySelector('#timer15')
+const timer35= document.querySelector('#timer35')
 
 // Test texts
 const testTexts = [
@@ -18,7 +20,8 @@ const testTexts = [
 
 // Game state
 let currentText = '';
-let timeLeft = 60;
+let selectedTime=60;
+let timeLeft = selectedTime;
 let timerInterval = null;
 let startTime = null;
 let isTestActive = false;
@@ -51,6 +54,11 @@ function endGame() {
     timeLeft = 60;
     displayContent();
     typingArea.disabled=true;
+}
+function setTime(seconds){
+    // selectedTime=seconds;
+    timeLeft=seconds;
+    displayContent()
 }
 function startGame() {
     startBtn.disabled = true;
@@ -136,3 +144,4 @@ webload();
 
 startBtn.addEventListener('click', startGame);
 typingArea.addEventListener('input', wordType);
+
