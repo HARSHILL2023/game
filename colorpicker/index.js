@@ -69,6 +69,7 @@ function generateColor(num){ // stores the six colors too show in the boxes
     }
 
     return arr;
+    console.log(arr)
 }
 function pickGenerator(){ // it gives  the correct color to choose
     const math = Math.floor(Math.random()*colors.length);
@@ -106,7 +107,7 @@ function trackBtn(event){
         bestStreakDisplay.textContent=bestStreak;
         localStorage.setItem('highBestStreak',bestStreak)
       }
-        webLoad()
+        webLoad()       
        
     }
     else{
