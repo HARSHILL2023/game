@@ -1,116 +1,231 @@
-*{
-    margin: 0.4%;
-    padding: 0%;
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
-.container{
-    background-color: gray;
-    /* padding-left: 33vw;*/
-} 
-body{
+
+body {
+    font-family: 'Montserrat', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
+    color: white;
 }
-header{
- display: flex;
-    justify-content: center;
+
+/* Main Container */
+.container {
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Header Styles */
+header {
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.color-display {
+    background: white;
+    color: #232526;
+    padding: 15px 30px;
+    border-radius: 10px;
+    margin: 15px 0;
+    font-size: 2em;
+    letter-spacing: 3px;
+    box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+    font-weight: normal;
+}
+
+/* Message Display */
+.message {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 25px;
+    height: 50px;
+    display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    flex-direction: column;
-}
-.message{
-    text-align: center;
-    font-size:23px ;
-}
-#colorDisplay{
-    background-color: white;
-    height: 4vw;
-    width: 37vw;
-    display: flex;
-    justify-content: center; 
-    align-items: center;   
-    font-size: xx-larger;
-    border-radius: 23px;
-}
-.streak-section{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2vw;
     justify-content: center;
-    margin-top: 2vw;
-    
+    transition: all 0.3s ease;
 }
-.streak-box{
-    border: 1px solid black;
-    background-color: rgb(66, 66, 65);
-    text-align: center;
-    width: 12vw;
-    border-radius: 23px;
-    
-    font-weight: 900;
-    /* padding: 2vw; */
 
-}
-.controls{
-    margin-top: 2vw;
+/* Streak Section */
+.streak-section {
     display: flex;
+    gap: 20px;
     justify-content: center;
-    gap: 2vw;
-   
+    margin-bottom: 30px;
 }
-#newRoundBtn{
-    font-weight: 900;
-    color: white;
-    background-color: aqua;
-    font-size: xx-large;
-     border-radius: 20px;
-    
-}
-#easyBtn{
-    color: white;
-    background-color: gray;
-    font-weight: 900;
-    font-size: xx-large;
-       border-radius: 20px;
-    
 
+.streak-box {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px 40px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
-#hardBtn{
-     color: black;
-    background-color: rgb(255, 255, 255);
-    font-weight: 900;
-    font-size: xx-large;
-       border-radius: 20px;
-    
-}
-#resetStreakBtn{
-    font-weight: 900;
-    color: white;
-    background-color: aqua;
-    font-size: xx-large;
-       border-radius: 20px;
-    
 
+.streak-box h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+    opacity: 0.8;
+    font-weight: 500;
 }
-#colorBoxContainer{
+
+.streak-number {
+    font-size: 3em;
+    font-weight: bold;
+    color: #4ECDC4;
+    text-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+}
+
+/* Control Buttons */
+.controls {
     display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 30px;
     flex-wrap: wrap;
-    gap: 2vw;
-    margin-top: 2vw;
-margin-left: 0%;
-justify-content: center;
-width: 56%;
-align-items: center;
-justify-content: center;
-margin-left: 20vw;
- 
 }
-.color-box{
-    border: 1px solid black;
-    height: 10vw;
-    width: 14vw;
-    border-radius: 23px;
-    background-color: rgb(87, 86, 84);
+
+.control-btn, .mode-btn {
+    padding: 12px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.control-btn {
+    background: #4ECDC4;
+    color: white;
+}
+
+.control-btn:hover {
+    background: #45b8b0;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+}
+
+.mode-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.mode-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.mode-btn.selected {
+    background: white;
+    color: #232526;
+    border-color: white;
+}
+
+/* Color Box Grid */
+.color-box-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.color-box {
+    aspect-ratio: 1;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 5px solid transparent;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.color-box:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.color-box.fade {
+    opacity: 0.2;
+    pointer-events: none;
+}
+.shake{
+    
+animation: shake 0.5s ease-in-out infinite;
+
+}
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(0px);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .color-display {
+        font-size: 1.5em;
+        padding: 10px 20px;
+    }
+    
+    .message {
+        font-size: 1.4em;
+    }
+    
+    .streak-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .streak-box {
+        padding: 15px 30px;
+    }
+    
+    .streak-number {
+        font-size: 2.5em;
+    }
+    
+    .color-box-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+    
+    .control-btn, .mode-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
     
 }
+
+/* @media (max-width: 480px) {
+    .color-box-container {
+        grid-template-columns: 1fr;
+    }
+} */

@@ -99,13 +99,30 @@ function trackBtn(event){
     var rgb = element.style.backgroundColor;
     console.log(rgb);
     if(pickCorrectColor=== rgb){
-       messageDisplay.textContent="you win, to play again click on new round"
+        element.style.border="2px solid gold" 
+        setTimeout(()=>{
+            element.style.border="none";
+        },1000)
+      
+       
        currentStreak++;
+       if(currentStreak==1){
+        messageDisplay.textContent="First Win!!!!"
+       }
+       else{
+        messageDisplay.textContent="you won again play and enjoy"
+       }
+
        currentStreakDisplay.textContent = currentStreak;
       if(currentStreak>bestStreak){
         bestStreak=currentStreak;
+        colorDisplay.style.fontWeight ='bold';
+        
         bestStreakDisplay.textContent=bestStreak;
         localStorage.setItem('highBestStreak',bestStreak)
+      }
+      if(currentStreak>=3){
+        messageDisplay.textContent="STREAKKKKKKK!";
       }
         webLoad()       
        
@@ -114,6 +131,10 @@ function trackBtn(event){
         messageDisplay.textContent="you can even choose a right color "
         currentStreak=0;
         currentStreakDisplay.textContent=currentStreak
+         element.classList.add('shake')
+         setTimeout(()=>{
+            element.classList.remove('shake')
+         },1000)
     }
     
 }
@@ -136,6 +157,7 @@ resetStreakBtn.addEventListener('click',gamerest)
 
 function easy(){
     webLoad()
+    easyBtn.style.backgroundColor='green'
     num=3;
     button1.style.display='none';
     button2.style.display='none';
@@ -150,6 +172,7 @@ easyBtn.addEventListener('click',easy)
 function hard(){
     webLoad()
     num=6;
+    easyBtn.style.backgroundColor='rgba(255, 255, 255, 0.1)'
     button1.style.display='block';
     button2.style.display='block';
     button3.style.display='block';
