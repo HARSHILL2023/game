@@ -5,6 +5,8 @@
 // Score elements
 const currentScoreDisplay = document.querySelector('#currentScore');
 const highScoreDisplay = document.querySelector('#highScore');
+const cps =document.querySelector('#cpsecond');
+const body=document.querySelector('body')
 
 // Timer element
 const timerDisplay = document.querySelector('#timer');
@@ -28,6 +30,7 @@ let highScore = 0;           // Stores all-time best score
 let timeRemaining = 10;      // Countdown timer (10 seconds)
 let gameTimerId = null;      // Stores setInterval ID for game timer
 let isGameActive = false;    // Tracks if game is currently running
+let cpsScore=0;
 
 
 // ========================================
@@ -73,6 +76,10 @@ function updateDisplay() {
     currentScoreDisplay.innerText = currentScore;
     highScoreDisplay.innerText = highScore;
     timerDisplay.innerText = timeRemaining;
+    if(currentScore>20){
+        currentScoreDisplay.style.color='red';
+    }
+
 }
 
 // Update status message
@@ -88,6 +95,7 @@ function updateStatus(message) {
 // Start the game
 function startGame() {
     // Reset game state
+    
     currentScore = 0;
     timeRemaining = 10;
     isGameActive = true;
@@ -110,9 +118,19 @@ function startGame() {
             endGame();
         }
     }, 1000); // Run every 1000ms (1 second)
-}
+    statusMessage.textContent='click me '
+ setTimeout(()=>{
+    statusMessage.textContent='click as fast as possible'
+ },1000)
 
-// End the game
+}
+function clickpersecond(){
+    var temp = currentScore/10;
+    cpsScore=temp;
+    cps.textContent=cpsScore;
+    return cpsScore;
+}
+// End the game=
 function endGame() {
     // Stop timer
     clearInterval(gameTimerId);
@@ -122,18 +140,30 @@ function endGame() {
     // Disable click button
     clickButton.disabled = true;
     startButton.disabled = false;
+    startButton.textContent="play again"
     
     // Check if new high score
     if (currentScore > highScore) {
         saveHighScore();
         updateStatus(`🎉 New High Score: ${currentScore}! Amazing!`);
-        video.style.display = 'block';
+        // video.style.display = 'block';
+        // video.play();
+        clickButton.style.transform="scale(1)"
+        body.style.background="yellow";
+        setTimeout(()=>{
+            video.style.display = 'block';
         video.play();
+        },1000)
+   
 
 
-    } else {
-        updateStatus(`Game Over! Your score: ${currentScore}`);
     }
+     else {
+        updateStatus(`Game Over! Your score: ${currentScore}`);
+        clickButton.style.transform="scale(1)"
+    }
+   
+    clickpersecond();
     
     updateDisplay(); 
 }
@@ -142,6 +172,7 @@ function endGame() {
 function handleClick() {
     if (isGameActive) {
         currentScore++; 
+        clickButton.style.transform="scale(1.1)"
         updateDisplay();
     }
 }
