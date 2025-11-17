@@ -7,6 +7,10 @@ const startBtn = document.querySelector('#startBtn');
 const holes = document.querySelectorAll('.hole');
 const moles = document.querySelectorAll('.mole');
 const message =document.querySelector('#meassage')
+const hitDisplay=document.querySelector('#hit');
+const glowing=document.querySelector('#glow');
+
+
 
 // Game State
 
@@ -17,6 +21,7 @@ let playGame = false;
 let gameId = null;
 let popTimeoutId = null;
 let isPaused = false;
+let hit =0;
 
 // Create Flex Container for Buttons 
 
@@ -62,6 +67,7 @@ function displayContent() {
   scoreDisplay.textContent = score;
   timeLeftDisplay.textContent = time;
   maxScoreDisplay.textContent = bestScore;
+  hitDisplay.textContent=hit;
 }
 
 function clearTimers() {
@@ -85,13 +91,23 @@ function endGame() {
   pauseBtn.disabled = true;
   pauseBtn.textContent = 'Pause';
   hideAllMoles();
+  startBtn.textContent="play again";
 
   if (score > bestScore) {
+     glowing.style.background='gold';
+     setTimeout(()=>{
+      glowing.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+     },3000)
     bestScore = score;
     localStorage.setItem('highScoreMole', bestScore);
     alert(`New Best! Score: ${score}`);
-  } else {
+    
+  } 
+  else {
     alert(`Your score: ${score}`);
+  }
+  if(score>50){
+    scoreDisplay.style.color='gold'
   }
 
   score = 0;
@@ -110,6 +126,7 @@ function randomHole() {
 function popGame() {
   if (!playGame) return;
   const timer = randomTime(500, 1500);
+  const timerFast=randomTime(600,1000);
   const hole = randomHole();
   const mole = hole.querySelector('.mole');
 
@@ -118,6 +135,14 @@ function popGame() {
     mole.classList.remove('up');
     if (playGame) popGame();
   }, timer);
+
+  if(time<10){
+popTimeoutId = setTimeout(() => {
+    mole.classList.remove('up');
+    if (playGame) popGame();
+  }, timerFast);
+
+  }
 }
 
 // Controls
@@ -174,6 +199,7 @@ function resetGame() {
 
   score = 0;
   time = 30;
+  hit=0;
   bestScore = 0;
   localStorage.setItem('highScoreMole', 0);
 
@@ -190,6 +216,8 @@ function bonk(event) {
   if (!event.isTrusted || !playGame) return;
   if (event.target.classList.contains('up')) {
     score++;
+    hit++;
+    message.textContent="Whack!!!!!!!!!"
     event.target.classList.remove('up');
     event.target.classList.add('bonked');
   }
