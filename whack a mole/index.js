@@ -1,232 +1,236 @@
-// DOM Elements
-
 const scoreDisplay = document.querySelector('#score');
 const timeLeftDisplay = document.querySelector('#timeLeft');
 const maxScoreDisplay = document.querySelector('#maxScore');
+const lastScoreDisplay = document.querySelector('#lastScore');
+const fastestHitDisplay = document.querySelector('#fastestHit');
+const hitDisplay = document.querySelector('#hits');
+
 const startBtn = document.querySelector('#startBtn');
+const pauseBtn = document.querySelector('#pauseBtn');
+const resumeBtn = document.querySelector('#resumeBtn');
 const holes = document.querySelectorAll('.hole');
 const moles = document.querySelectorAll('.mole');
-const message =document.querySelector('#meassage')
-const hitDisplay=document.querySelector('#hit');
-const glowing=document.querySelector('#glow');
 
+var score = 0;
+var hits = 0;
+var time = 30;
+var bestScore = 0;
+var playGame = false;
+var paused = false;
+var gameId = null;
 
+var moleStartTime = null; // For fastest hit (ms tracking)
 
-// Game State
-
-let score = 0;
-let time = 30;
-let bestScore = 0;
-let playGame = false;
-let gameId = null;
-let popTimeoutId = null;
-let isPaused = false;
-let hit =0;
-
-// Create Flex Container for Buttons 
-
-const buttonContainer = document.createElement('div');
-buttonContainer.style.display = 'flex';
-buttonContainer.style.justifyContent = 'space-between';
-buttonContainer.style.gap = '10px';
-buttonContainer.style.marginBottom = '20px';
-startBtn.insertAdjacentElement('afterend', buttonContainer);
-
-// Create Pause/Resume Button 
-
-const pauseBtn = document.createElement('button');
-pauseBtn.id = 'pauseBtn';
-pauseBtn.className = 'start-btn';
-pauseBtn.textContent = 'Pause';
-pauseBtn.disabled = true;
-
-// Create Reset Button 
-
-const resetBtn = document.createElement('button');
-resetBtn.id = 'resetBtn';
-resetBtn.className = 'start-btn';
-resetBtn.textContent = 'Reset';
-
-// Append both buttons into flex container
-buttonContainer.appendChild(pauseBtn);
-buttonContainer.appendChild(resetBtn);
-
-// Utility Functions
-
-function webLoad() {
+// -----------------------------------------------------
+// LOADING
+// -----------------------------------------------------
+function webload() {
   onLoad();
   displayContent();
 }
 
 function onLoad() {
-  const temp = localStorage.getItem('highScoreMole');
-  bestScore = temp != null ? Number(temp) : 0;
+  // High score
+  var temp = localStorage.getItem('highScoreMole');
+  bestScore = temp != null ? temp : 0;
+
+  // Last game score (session only)
+  var last = sessionStorage.getItem('lastScore');
+  lastScoreDisplay.textContent = last ? last : "0";
+
+  // Fastest hit
+  var fast = sessionStorage.getItem('fastestHit');
+  fastestHitDisplay.textContent = fast ? fast + "ms" : "None";
 }
 
+// -----------------------------------------------------
+// DISPLAY UPDATE
+// -----------------------------------------------------
 function displayContent() {
   scoreDisplay.textContent = score;
   timeLeftDisplay.textContent = time;
   maxScoreDisplay.textContent = bestScore;
-  hitDisplay.textContent=hit;
+  hitDisplay.textContent = hits;
+
+  // ⭐ GOLD SCORE after 50
+  if (score > 50) {
+    scoreDisplay.style.color = "gold";
+  } else {
+    scoreDisplay.style.color = "white";
+  }
 }
 
-function clearTimers() {
-  if (gameId) clearInterval(gameId);
-  if (popTimeoutId) clearTimeout(popTimeoutId);
-  gameId = null;
-  popTimeoutId = null;
-}
-
-function hideAllMoles() {
-  moles.forEach(m => m.classList.remove('up', 'bonked'));
-}
-
-// Game Logic
-
+// -----------------------------------------------------
+// END GAME
+// -----------------------------------------------------
 function endGame() {
-  clearTimers();
+  clearInterval(gameId);
   playGame = false;
-  isPaused = false;
+
   startBtn.disabled = false;
   pauseBtn.disabled = true;
-  pauseBtn.textContent = 'Pause';
-  hideAllMoles();
-  startBtn.textContent="play again";
+  resumeBtn.disabled = true;
 
+  // Save last game score (session)
+  sessionStorage.setItem("lastScore", score);
+  lastScoreDisplay.textContent = score;
+
+  // Save high score
   if (score > bestScore) {
-     glowing.style.background='gold';
-     setTimeout(()=>{
-      glowing.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-     },3000)
+    localStorage.setItem('highScoreMole', score);
     bestScore = score;
-    localStorage.setItem('highScoreMole', bestScore);
-    alert(`New Best! Score: ${score}`);
-    
-  } 
-  else {
-    alert(`Your score: ${score}`);
-  }
-  if(score>50){
-    scoreDisplay.style.color='gold'
+
+    // ⭐ Glow effect
+    maxScoreDisplay.style.textShadow = "0 0 20px yellow";
+    setTimeout(() => maxScoreDisplay.style.textShadow = "none", 1200);
+
+    alert(`🎉 New High Score: ${score}`);
+  } else {
+    alert(`Your Score: ${score}`);
   }
 
+  // Reset
   score = 0;
-  time = 30;
+  hits = 0;
   displayContent();
+
+  // Start button text
+  startBtn.innerText = "Play Again";
 }
 
-function randomTime(min, max) {
-  return Math.floor(Math.random() * (max - min) + min);
+// -----------------------------------------------------
+// RANDOM
+// -----------------------------------------------------
+function randomTime() {
+  // ⭐ Speed increase when time < 10 sec
+  if (time < 10) return Math.floor(Math.random() * (600 - 400) + 400);
+  return Math.floor(Math.random() * (900 - 900) + 900);
 }
 
 function randomHole() {
-  return holes[Math.floor(Math.random() * holes.length)];
+  var index = Math.floor(Math.random() * holes.length);
+  return holes[index];
 }
 
+// -----------------------------------------------------
+// MOLE POPPING
+// -----------------------------------------------------
 function popGame() {
-  if (!playGame) return;
-  const timer = randomTime(500, 1500);
-  const timerFast=randomTime(600,1000);
-  const hole = randomHole();
-  const mole = hole.querySelector('.mole');
+  var timer = randomTime();
+  var hole = randomHole();
+  var mole = hole.querySelector('.mole');
 
-  mole.classList.add('up');
-  popTimeoutId = setTimeout(() => {
-    mole.classList.remove('up');
-    if (playGame) popGame();
-  }, timer);
+  if (playGame && !paused) {
+    mole.classList.add('up');
 
-  if(time<10){
-popTimeoutId = setTimeout(() => {
-    mole.classList.remove('up');
-    if (playGame) popGame();
-  }, timerFast);
+    moleStartTime = Date.now(); // Start time for fastest hit
 
+    setTimeout(() => {
+      mole.classList.remove('up');
+      if (playGame && !paused) {
+        popGame();
+      }
+    }, timer);
   }
 }
 
-// Controls
-
+// -----------------------------------------------------
+// START GAME
+// -----------------------------------------------------
 function startGame() {
-  if (playGame && !isPaused) return;
-
   time = 30;
   score = 0;
+  hits = 0;
   playGame = true;
-  isPaused = false;
+  paused = false;
+
+  // Reset button text
+  startBtn.innerText = "Start Game";
+
+  // Clear last score on start
+  sessionStorage.removeItem("lastScore");
+  lastScoreDisplay.textContent = "0";
+
   startBtn.disabled = true;
   pauseBtn.disabled = false;
-  pauseBtn.textContent = 'Pause';
+  resumeBtn.disabled = true;
 
   displayContent();
   popGame();
 
   gameId = setInterval(() => {
-    time--;
-    if (time < 0) endGame();
-    displayContent();
+    if (!paused) {
+      time--;
+      if (time <= 0) {
+        endGame();
+      }
+      displayContent();
+    }
   }, 1000);
 }
 
+// -----------------------------------------------------
+// PAUSE / RESUME
+// -----------------------------------------------------
 function pauseGame() {
-  if (!playGame || isPaused) return;
-  isPaused = true;
-  playGame = false;
-  clearTimers();
-  hideAllMoles();
-  pauseBtn.textContent = 'Resume';
+  paused = true;
+  pauseBtn.disabled = true;
+  resumeBtn.disabled = false;
 }
 
 function resumeGame() {
-  if (!isPaused) return;
-  isPaused = false;
-  playGame = true;
-  pauseBtn.textContent = 'Pause';
+  paused = false;
+  pauseBtn.disabled = false;
+  resumeBtn.disabled = true;
   popGame();
-
-  gameId = setInterval(() => {
-    time--;
-    if (time < 0) endGame();
-    displayContent();
-  }, 1000);
 }
 
-function resetGame() {
-  clearTimers();
-  playGame = false;
-  isPaused = false;
-  hideAllMoles();
-
-  score = 0;
-  time = 30;
-  hit=0;
-  bestScore = 0;
-  localStorage.setItem('highScoreMole', 0);
-
-  startBtn.disabled = false;
-  pauseBtn.disabled = true;
-  pauseBtn.textContent = 'Pause';
-  displayContent();
-}
-
-// Event Listeners
-
-
+// -----------------------------------------------------
+// HIT MOLE
+// -----------------------------------------------------
 function bonk(event) {
-  if (!event.isTrusted || !playGame) return;
+  if (!event.isTrusted || !playGame || paused) return;
   if (event.target.classList.contains('up')) {
+
+    hits++;
     score++;
-    hit++;
-    message.textContent="Whack!!!!!!!!!"
+    displayContent();
+
+    // Hide mole
     event.target.classList.remove('up');
     event.target.classList.add('bonked');
+
+    // ---------------------------------------
+    // ⭐ WHACK MESSAGE
+    // ---------------------------------------
+    const msg = document.querySelector('#whackMsg');
+    msg.style.opacity = 1;
+    msg.style.transform = "scale(1.4)";
+    setTimeout(() => {
+      msg.style.opacity = 0;
+      msg.style.transform = "scale(1)";
+    }, 300);
+
+    // ---------------------------------------
+    // ⭐ FASTEST HIT TRACKER
+    // ---------------------------------------
+    if (moleStartTime) {
+      let reaction = Date.now() - moleStartTime;
+      let fastest = sessionStorage.getItem('fastestHit');
+
+      if (!fastest || reaction < fastest) {
+        sessionStorage.setItem('fastestHit', reaction);
+        fastestHitDisplay.textContent = reaction + "ms";
+      }
+    }
+
+    setTimeout(() => event.target.classList.remove('bonked'), 300);
   }
-  setTimeout(() => event.target.classList.remove('bonked'), 300);
-  displayContent();
 }
 
-webLoad();
-moles.forEach(m => m.addEventListener('click', bonk));
+// -----------------------------------------------------
+webload();
+moles.forEach(box => box.addEventListener('click', bonk));
 startBtn.addEventListener('click', startGame);
-pauseBtn.addEventListener('click', () => (isPaused ? resumeGame() : pauseGame()));
-resetBtn.addEventListener('click', resetGame);
+pauseBtn.addEventListener('click', pauseGame);
+resumeBtn.addEventListener('click', resumeGame);
