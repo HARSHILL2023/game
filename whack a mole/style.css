@@ -182,7 +182,7 @@ h1 {
 .pause-btn:disabled,
 .resume-btn:disabled {
   background: #ccc;
-  cursor: not-allowed;
+  cursor: not-allowed; 
 }
 
 
